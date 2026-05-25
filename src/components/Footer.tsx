@@ -141,12 +141,13 @@ export default function Footer() {
             </span>
             <span>© {new Date().getFullYear()} Vitrin. Bütün hüquqlar qorunur.</span>
           </div>
-          <a
-            href="#top"
-            className="font-semibold text-white no-underline underline-offset-4 hover:underline"
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="cursor-pointer bg-transparent border-0 p-0 font-semibold text-white no-underline underline-offset-4 hover:underline"
           >
             Yuxarıya qayıt
-          </a>
+          </button>
         </div>
       </div>
     </footer>

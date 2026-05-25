@@ -12,15 +12,12 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../products/components/ProductCard";
-import ProductDetailModal from "../products/components/ProductDetailModal";
-import { useProductDetailModal } from "../products/hooks/useProductDetailModal";
 import {
   getHomeCategoryTile,
   HOME_CATEGORY_ACCENTS,
   HOME_CATEGORY_TILES,
   HOME_FEATURES,
   HOME_HERO_CHIPS,
-  HOME_HERO_IMAGE,
   HOME_HERO_STATS,
   HOME_SHOWCASE_IMAGES,
   HOME_SHOWCASE_LABELS,
@@ -32,14 +29,6 @@ export default function Home() {
   const navigate = useNavigate();
   const { categories, error, fetchHomeCatalog, loading, products } =
     useHomeCatalog();
-  const {
-    closeProduct,
-    handleModalOpenChange,
-    isProductModalOpen,
-    openProduct,
-    selectedProduct,
-  } = useProductDetailModal();
-
   const categoryTiles = HOME_CATEGORY_TILES.map((tile, index) =>
     getHomeCategoryTile(categories[index]?.name || tile.title, index),
   );
@@ -49,101 +38,80 @@ export default function Home() {
   return (
     <div className="space-y-12">
       {/* HERO */}
-      <section className="relative min-h-[580px] overflow-hidden rounded-3xl bg-slate-950 text-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.7)]">
-        <img
-          src={HOME_HERO_IMAGE}
-          alt="Müştəri alış-veriş vitrini"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-teal-950/80 to-sky-900/40" />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-teal-500/30 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-32 -left-10 h-80 w-80 rounded-full bg-sky-500/20 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute right-1/3 top-1/3 h-56 w-56 rounded-full bg-fuchsia-500/15 blur-3xl"
-        />
+      <section className="py-10 sm:py-14">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-700">
+            <ThunderboltFilled />
+            Yeni vitrin
+          </span>
+          <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 sm:inline-flex">
+            <CheckCircleFilled className="text-emerald-500" />
+            Stokda olan seçimlər
+          </span>
+        </div>
 
-        <div className="relative flex min-h-[580px] flex-col justify-between gap-y-10 px-6 py-10 sm:gap-y-14 sm:px-10 sm:py-12 lg:px-14">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-200 backdrop-blur">
-              <ThunderboltFilled />
-              Yeni vitrin
-            </span>
-            <span className="hidden items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur sm:inline-flex">
-              <CheckCircleFilled className="text-emerald-300" />
-              Stokda olan seçimlər
-            </span>
-          </div>
-
-          <div className="max-w-3xl">
-            <div className="mb-7 flex flex-wrap items-center gap-2.5">
-              {HOME_HERO_CHIPS.map((chip) => (
-                <span
-                  key={chip.label}
-                  className={`inline-flex items-center gap-1 rounded-full border border-white/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider backdrop-blur ${chip.className}`}
-                >
-                  <StarFilled className="text-[9px]" />
-                  {chip.label}
-                </span>
-              ))}
-            </div>
-            <h1 className="m-0 text-4xl font-black leading-[1.15] tracking-tight sm:text-6xl sm:leading-[1.1] lg:text-7xl">
-              Seçilmiş məhsullar,
-              <br className="hidden sm:inline" />{" "}
-              <span className="bg-gradient-to-r from-teal-300 via-emerald-300 to-sky-300 bg-clip-text text-transparent">
-                rahat alış-veriş
+        <div className="max-w-3xl">
+          <div className="mb-7 flex flex-wrap items-center gap-2.5">
+            {HOME_HERO_CHIPS.map((chip) => (
+              <span
+                key={chip.label}
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${chip.className}`}
+              >
+                <StarFilled className="text-[9px]" />
+                {chip.label}
               </span>
-            </h1>
-            <p className="mt-7 max-w-2xl text-base leading-7 text-slate-100/90 sm:text-lg sm:leading-8">
-              Göz oxşayan vitrin, zövqlü seçimlər və hər cihazda rahat məhsul
-              baxışı. Yeni kolleksiyalar həftəlik yenilənir.
-            </p>
-
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Button
-                type="primary"
-                size="large"
-                icon={<ShoppingOutlined />}
-                onClick={() => navigate("/products")}
-                className="!h-12 !rounded-full !border-0 !bg-gradient-to-r !from-teal-500 !to-emerald-500 !px-6 !font-semibold !text-white !shadow-[0_16px_36px_-18px_rgba(13,148,136,0.9)] hover:!from-teal-600 hover:!to-emerald-600"
-              >
-                Məhsullara bax
-              </Button>
-              <Button
-                size="large"
-                icon={<ArrowRightOutlined />}
-                onClick={() => navigate("/products")}
-                className="!h-12 !rounded-full !border-white/30 !bg-white/10 !px-6 !font-semibold !text-white !backdrop-blur hover:!border-white/60 hover:!bg-white/20"
-              >
-                Kolleksiyanı aç
-              </Button>
-            </div>
-          </div>
-
-          <div className="mt-10 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
-            {HOME_HERO_STATS.map((item) => (
-              <div
-                key={item.value}
-                className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur transition hover:border-teal-300/50 hover:bg-white/15"
-              >
-                <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400/30 to-sky-400/30 text-base text-teal-200">
-                  {item.icon}
-                </div>
-                <p className="m-0 text-lg font-extrabold text-white">
-                  {item.value}
-                </p>
-                <p className="m-0 mt-0.5 text-xs font-medium text-slate-200/80">
-                  {item.label}
-                </p>
-              </div>
             ))}
           </div>
+          <h1 className="m-0 text-4xl font-black leading-[1.15] tracking-tight text-slate-900 sm:text-6xl sm:leading-[1.1] lg:text-7xl">
+            Seçilmiş məhsullar,
+            <br className="hidden sm:inline" />{" "}
+            <span className="bg-gradient-to-r from-teal-500 via-emerald-500 to-sky-500 bg-clip-text text-transparent">
+              rahat alış-veriş
+            </span>
+          </h1>
+          <p className="mt-7 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+            Göz oxşayan vitrin, zövqlü seçimlər və hər cihazda rahat məhsul
+            baxışı. Yeni kolleksiyalar həftəlik yenilənir.
+          </p>
+
+          <div className="mt-9 flex flex-wrap gap-3">
+            <Button
+              type="primary"
+              size="large"
+              icon={<ShoppingOutlined />}
+              onClick={() => navigate("/products")}
+              className="!h-12 !rounded-full !border-0 !bg-gradient-to-r !from-teal-500 !to-emerald-500 !px-6 !font-semibold !text-white !shadow-[0_8px_24px_-10px_rgba(13,148,136,0.6)] hover:!from-teal-600 hover:!to-emerald-600"
+            >
+              Məhsullara bax
+            </Button>
+            <Button
+              size="large"
+              icon={<ArrowRightOutlined />}
+              onClick={() => navigate("/products")}
+              className="!h-12 !rounded-full !border-slate-300 !bg-transparent !px-6 !font-semibold !text-slate-700 hover:!border-teal-400 hover:!text-teal-600"
+            >
+              Kolleksiyanı aç
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-10 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
+          {HOME_HERO_STATS.map((item) => (
+            <div
+              key={item.value}
+              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-teal-300 hover:shadow-md"
+            >
+              <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-50 to-sky-50 text-base text-teal-600 border border-teal-100">
+                {item.icon}
+              </div>
+              <p className="m-0 text-lg font-extrabold text-slate-900">
+                {item.value}
+              </p>
+              <p className="m-0 mt-0.5 text-xs font-medium text-slate-500">
+                {item.label}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -310,7 +278,8 @@ export default function Home() {
             Premium səviyyə müştəri təcrübəsi
           </h2>
           <p className="m-0 mt-2 text-sm text-slate-600">
-            Hər təfərrüat müştəri üçün düşünülüb — sürətli, təhlükəsiz və zövqlü.
+            Hər təfərrüat müştəri üçün düşünülüb — sürətli, təhlükəsiz və
+            zövqlü.
           </p>
         </div>
 
@@ -377,7 +346,6 @@ export default function Home() {
               <ProductCard
                 key={product.id}
                 product={product}
-                onView={openProduct}
               />
             ))}
           </div>
@@ -389,29 +357,20 @@ export default function Home() {
       </section>
 
       {/* CTA STRIP */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-teal-950 to-slate-950 px-6 py-10 text-white shadow-[0_30px_70px_-30px_rgba(15,23,42,0.7)] sm:px-12 sm:py-14">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 -top-20 h-72 w-72 rounded-full bg-teal-500/30 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl"
-        />
-
-        <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <section className="rounded-3xl border border-slate-200 bg-white px-6 py-10 shadow-sm sm:px-12 sm:py-14">
+        <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-xl">
-            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-teal-200 backdrop-blur">
+            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-teal-700">
               <GiftFilled />
               Xüsusi təklif
             </span>
-            <h3 className="m-0 text-2xl font-black tracking-tight sm:text-4xl">
+            <h3 className="m-0 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">
               Vitrinin yeniliklərini{" "}
-              <span className="bg-gradient-to-r from-teal-300 via-emerald-300 to-sky-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-teal-500 via-emerald-500 to-sky-500 bg-clip-text text-transparent">
                 ilk siz öyrənin
               </span>
             </h3>
-            <p className="m-0 mt-3 text-sm leading-6 text-slate-200/85 sm:text-base">
+            <p className="m-0 mt-3 text-sm leading-6 text-slate-500 sm:text-base">
               Yeni gələn məhsullar, kampaniyalar və endirimlər haqqında ilk
               məlumat almaq üçün vitrini izləyin.
             </p>
@@ -422,19 +381,13 @@ export default function Home() {
             size="large"
             icon={<ShoppingOutlined />}
             onClick={() => navigate("/products")}
-            className="!h-12 !rounded-full !border-0 !bg-gradient-to-r !from-teal-500 !to-emerald-500 !px-7 !font-semibold !text-white !shadow-[0_16px_36px_-18px_rgba(13,148,136,0.9)] hover:!from-teal-600 hover:!to-emerald-600"
+            className="!h-12 !rounded-full !border-0 !bg-gradient-to-r !from-teal-500 !to-emerald-500 !px-7 !font-semibold !text-white !shadow-[0_8px_24px_-10px_rgba(13,148,136,0.6)] hover:!from-teal-600 hover:!to-emerald-600"
           >
             İndi alış-verişə başla
           </Button>
         </div>
       </section>
 
-      <ProductDetailModal
-        product={selectedProduct}
-        open={isProductModalOpen}
-        onClose={closeProduct}
-        onOpenChange={handleModalOpenChange}
-      />
     </div>
   );
 }

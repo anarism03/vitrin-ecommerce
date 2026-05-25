@@ -14,7 +14,6 @@ import {
   FilterOutlined,
   ReloadOutlined,
   SearchOutlined,
-  SortAscendingOutlined,
 } from "@ant-design/icons";
 import type { CategoryOption } from "../../../types/category.type";
 import type { ProductFilters, ProductSort } from "../../../types/product.type";
@@ -58,11 +57,34 @@ export default function ProductToolbar({
   const [filterOpen, setFilterOpen] = useState(false);
   const isMobile = useIsMobile();
 
+  // Local state to hold filter changes before applying
+  const [localFilters, setLocalFilters] = useState<ProductFilters>(filters);
+
+  // Sync local state when popover opens/closes or external filters change
+  useEffect(() => {
+    if (filterOpen) {
+      setLocalFilters(filters);
+    } else {
+      setLocalFilters(filters);
+    }
+  }, [filterOpen, filters]);
+
   const activeFilterCount = [
     filters.categoryId,
     filters.minPrice !== undefined,
     filters.maxPrice !== undefined,
+    filters.sortBy !== "newest"
   ].filter(Boolean).length;
+
+  const handleApply = () => {
+    onChange({
+      categoryId: localFilters.categoryId,
+      minPrice: localFilters.minPrice,
+      maxPrice: localFilters.maxPrice,
+      sortBy: localFilters.sortBy,
+    });
+    setFilterOpen(false);
+  };
 
   const handleReset = () => {
     onReset();
@@ -74,8 +96,27 @@ export default function ProductToolbar({
     value: option.value,
   }));
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleApply();
+    }
+  };
+
   const filterFields = (
-    <div className="space-y-4">
+    <div className="space-y-4" onKeyDown={handleKeyDown}>
+      <div>
+        <p className="m-0 mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Sıralama
+        </p>
+        <Select<ProductSort>
+          className="w-full"
+          size="large"
+          value={localFilters.sortBy}
+          onChange={(value) => setLocalFilters({ ...localFilters, sortBy: value })}
+          options={sortOptions}
+        />
+      </div>
+
       <div>
         <p className="m-0 mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
           Kateqoriya
@@ -85,8 +126,8 @@ export default function ProductToolbar({
           className="w-full"
           size="large"
           placeholder="Kateqoriya seçin"
-          value={filters.categoryId}
-          onChange={(value) => onChange({ categoryId: value })}
+          value={localFilters.categoryId}
+          onChange={(value) => setLocalFilters({ ...localFilters, categoryId: value })}
           options={categories.map((category) => ({
             label: category.name,
             value: category.id,
@@ -104,16 +145,16 @@ export default function ProductToolbar({
             size="large"
             min={0}
             placeholder="Min"
-            value={filters.minPrice}
-            onChange={(value) => onChange({ minPrice: getNumberValue(value) })}
+            value={localFilters.minPrice}
+            onChange={(value) => setLocalFilters({ ...localFilters, minPrice: getNumberValue(value) })}
           />
           <InputNumber
             className="w-full"
             size="large"
             min={0}
             placeholder="Max"
-            value={filters.maxPrice}
-            onChange={(value) => onChange({ maxPrice: getNumberValue(value) })}
+            value={localFilters.maxPrice}
+            onChange={(value) => setLocalFilters({ ...localFilters, maxPrice: getNumberValue(value) })}
           />
         </div>
       </div>
@@ -124,23 +165,30 @@ export default function ProductToolbar({
     <div className="w-[min(340px,calc(100vw-32px))]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
-          <p className="m-0 text-sm font-bold text-slate-950">Filtr</p>
+          <p className="m-0 text-sm font-bold text-slate-950">Filtr & Sıralama</p>
           <p className="m-0 mt-1 text-xs text-slate-500">
-            Kateqoriya və qiymət aralığı.
+            Sıralama, kateqoriya və qiymət aralığı.
           </p>
         </div>
-        <Button size="small" type="link" onClick={handleReset}>
-          Sıfırla
-        </Button>
       </div>
 
       {filterFields}
 
-      <Divider className="!my-3" />
+      <Divider className="!my-4" />
 
-      <p className="m-0 text-xs leading-5 text-slate-500">
-        Axtarış adı yuxarıdakı inputdan serverə göndərilir.
-      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <Button onClick={handleReset} size="large" className="!h-10 !rounded-xl !font-semibold text-slate-600">
+          Sıfırla
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          onClick={handleApply}
+          className="!h-10 !rounded-xl !border-0 !bg-gradient-to-r !from-teal-600 !to-emerald-600 !font-semibold"
+        >
+          Tətbiq et
+        </Button>
+      </div>
     </div>
   );
 
@@ -157,9 +205,9 @@ export default function ProductToolbar({
         size="large"
         block
         onClick={isMobile ? () => setFilterOpen(true) : undefined}
-        className="!h-12 !rounded-xl !border-slate-200 !bg-white !font-semibold !text-slate-700 !shadow-sm hover:!border-teal-400 hover:!text-teal-700 sm:!w-auto sm:!px-4"
+        className="!h-12 !rounded-xl !border-slate-200 !bg-white !font-semibold !text-slate-700 !shadow-sm hover:!border-teal-400 hover:!text-teal-700 sm:!w-auto sm:!px-6"
       >
-        Filtr
+        Filtrlər
       </Button>
     </Badge>
   );
@@ -181,51 +229,30 @@ export default function ProductToolbar({
           className="!w-full !min-w-0 !flex-1 !rounded-xl !border-slate-200 !bg-white !shadow-sm hover:!border-teal-300"
         />
 
-        <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-stretch lg:w-auto lg:flex-nowrap">
-          <div className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 shadow-sm sm:flex-initial sm:basis-[220px] lg:basis-auto">
-            <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-sky-500 text-white shadow-sm">
-              <SortAscendingOutlined />
-            </span>
-            <div className="flex min-w-0 flex-1 flex-col justify-center">
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
-                Sıralama
-              </span>
-              <Select<ProductSort>
-                variant="borderless"
-                value={filters.sortBy}
-                onChange={(value) => onChange({ sortBy: value })}
-                options={sortOptions}
-                popupMatchSelectWidth={false}
-                className="!w-full !font-semibold !text-slate-900"
-              />
-            </div>
-          </div>
-
-          <div className="grid flex-none grid-cols-2 gap-2 sm:flex sm:items-center">
-            {isMobile ? (
-              filterTrigger
-            ) : (
-              <Popover
-                content={popoverContent}
-                trigger="click"
-                placement="bottom"
-                arrow={{ pointAtCenter: true }}
-                getPopupContainer={() => document.body}
-                open={filterOpen}
-                onOpenChange={setFilterOpen}
-              >
-                {filterTrigger}
-              </Popover>
-            )}
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={handleReset}
-              size="large"
-              className="!h-12 !w-full !rounded-xl !border-slate-200 !bg-white !font-semibold !text-slate-700 !shadow-sm hover:!border-rose-300 hover:!text-rose-600 sm:!w-auto sm:!px-4"
+        <div className="flex flex-none grid-cols-2 gap-2 sm:flex sm:items-center w-full lg:w-auto">
+          {isMobile ? (
+            filterTrigger
+          ) : (
+            <Popover
+              content={popoverContent}
+              trigger="click"
+              placement="bottomRight"
+              arrow={{ pointAtCenter: true }}
+              getPopupContainer={() => document.body}
+              open={filterOpen}
+              onOpenChange={setFilterOpen}
             >
-              Sıfırla
-            </Button>
-          </div>
+              {filterTrigger}
+            </Popover>
+          )}
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={handleReset}
+            size="large"
+            className="!h-12 !w-full !rounded-xl !border-slate-200 !bg-white !font-semibold !text-slate-700 !shadow-sm hover:!border-rose-300 hover:!text-rose-600 sm:!w-auto sm:!px-4"
+          >
+            Sıfırla
+          </Button>
         </div>
       </div>
 
@@ -252,9 +279,9 @@ export default function ProductToolbar({
 
           <div className="flex items-start justify-between gap-3 px-5 pt-4">
             <div>
-              <p className="m-0 text-base font-bold text-slate-950">Filtr</p>
+              <p className="m-0 text-base font-bold text-slate-950">Filtr & Sıralama</p>
               <p className="m-0 mt-0.5 text-xs text-slate-500">
-                Kateqoriya və qiymət aralığını seçin.
+                Sıralama, kateqoriya və qiymət aralığını seçin.
               </p>
             </div>
             <Button
@@ -272,14 +299,14 @@ export default function ProductToolbar({
             <Button
               size="large"
               onClick={handleReset}
-              className="!h-12 !rounded-xl !font-semibold"
+              className="!h-12 !rounded-xl !font-semibold text-slate-600"
             >
               Sıfırla
             </Button>
             <Button
               type="primary"
               size="large"
-              onClick={() => setFilterOpen(false)}
+              onClick={handleApply}
               className="!h-12 !rounded-xl !border-0 !bg-gradient-to-r !from-teal-600 !to-emerald-600 !font-semibold"
             >
               Tətbiq et

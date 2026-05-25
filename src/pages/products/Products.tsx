@@ -7,10 +7,8 @@ import {
   ThunderboltFilled,
 } from "@ant-design/icons";
 import ProductCard from "./components/ProductCard";
-import ProductDetailModal from "./components/ProductDetailModal";
 import ProductToolbar from "./components/ProductToolbar";
 import { useProductCatalog } from "./hooks/useProductCatalog";
-import { useProductDetailModal } from "./hooks/useProductDetailModal";
 import {
   PRODUCT_HERO_CHIPS,
   PRODUCT_HERO_HIGHLIGHTS,
@@ -32,86 +30,62 @@ export default function Products() {
     totalCount,
     updateFilters,
   } = useProductCatalog();
-  const {
-    closeProduct,
-    handleModalOpenChange,
-    isProductModalOpen,
-    openProduct,
-    selectedProduct,
-  } = useProductDetailModal();
-
   const shownCount = products.length;
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-3xl bg-slate-950 text-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.7)]">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-teal-950/90 to-sky-900/40" />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 -top-20 h-72 w-72 rounded-full bg-teal-500/30 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-sky-500/25 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute right-1/4 top-1/2 h-48 w-48 rounded-full bg-fuchsia-500/15 blur-3xl"
-        />
+      <section className="py-10 sm:py-12">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-700">
+            <ThunderboltFilled />
+            Public vitrin
+          </span>
+          <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 sm:inline-flex">
+            <CheckCircleFilled className="text-emerald-500" />
+            Stokda olan seçimlər
+          </span>
+        </div>
 
-        <div className="relative flex flex-col gap-10 px-6 py-10 sm:gap-12 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-200 backdrop-blur">
-              <ThunderboltFilled />
-              Public vitrin
-            </span>
-            <span className="hidden items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur sm:inline-flex">
-              <CheckCircleFilled className="text-emerald-300" />
-              Stokda olan seçimlər
-            </span>
+        <div className="max-w-3xl">
+          <div className="mb-6 flex flex-wrap items-center gap-2.5">
+            {PRODUCT_HERO_CHIPS.map((chip) => (
+              <span
+                key={chip.label}
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${chip.className}`}
+              >
+                <StarFilled className="text-[9px]" />
+                {chip.label}
+              </span>
+            ))}
           </div>
 
-          <div className="max-w-3xl">
-            <div className="mb-6 flex flex-wrap items-center gap-2.5">
-              {PRODUCT_HERO_CHIPS.map((chip) => (
-                <span
-                  key={chip.label}
-                  className={`inline-flex items-center gap-1 rounded-full border border-white/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider backdrop-blur ${chip.className}`}
-                >
-                  <StarFilled className="text-[9px]" />
-                  {chip.label}
-                </span>
-              ))}
-            </div>
+          <h1 className="m-0 text-3xl font-black leading-[1.15] tracking-tight text-slate-900 sm:text-5xl sm:leading-[1.1] lg:text-6xl">
+            Bütün məhsullar
+            <br className="hidden sm:inline" />{" "}
+            <span className="bg-gradient-to-r from-teal-500 via-emerald-500 to-sky-500 bg-clip-text text-transparent">
+              bir vitrində
+            </span>
+          </h1>
 
-            <h1 className="m-0 text-3xl font-black leading-[1.15] tracking-tight sm:text-5xl sm:leading-[1.1] lg:text-6xl">
-              Bütün məhsullar
-              <br className="hidden sm:inline" />{" "}
-              <span className="bg-gradient-to-r from-teal-300 via-emerald-300 to-sky-300 bg-clip-text text-transparent">
-                bir vitrində
+          <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+            Yeni gələn seçimləri, stokda olan təklifləri və kateqoriyaları
+            rahat bir vitrində kəşf edin — istədiyinizi axtarın, filtrlə
+            daraldın.
+          </p>
+
+          <div className="mt-7 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+            {PRODUCT_HERO_HIGHLIGHTS.map((item, idx) => (
+              <span
+                key={item.label}
+                className="inline-flex items-center gap-1.5"
+              >
+                <ArrowRightOutlined className={item.color} />
+                {item.label}
+                {idx < PRODUCT_HERO_HIGHLIGHTS.length - 1 && (
+                  <span className="ml-1 text-slate-300">•</span>
+                )}
               </span>
-            </h1>
-
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-100/90 sm:text-lg sm:leading-8">
-              Yeni gələn seçimləri, stokda olan təklifləri və kateqoriyaları
-              rahat bir vitrində kəşf edin — istədiyinizi axtarın, filtrlə
-              daraldın.
-            </p>
-
-            <div className="mt-7 flex flex-wrap items-center gap-2 text-sm text-slate-200/80">
-              {PRODUCT_HERO_HIGHLIGHTS.map((item, idx) => (
-                <span
-                  key={item.label}
-                  className="inline-flex items-center gap-1.5"
-                >
-                  <ArrowRightOutlined className={item.color} />
-                  {item.label}
-                  {idx < PRODUCT_HERO_HIGHLIGHTS.length - 1 && (
-                    <span className="ml-1 text-slate-500">•</span>
-                  )}
-                </span>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -160,7 +134,6 @@ export default function Products() {
                   <ProductCard
                     key={product.id}
                     product={product}
-                    onView={openProduct}
                   />
                 ))}
               </div>
@@ -197,12 +170,6 @@ export default function Products() {
         </div>
       </section>
 
-      <ProductDetailModal
-        product={selectedProduct}
-        open={isProductModalOpen}
-        onClose={closeProduct}
-        onOpenChange={handleModalOpenChange}
-      />
     </div>
   );
 }

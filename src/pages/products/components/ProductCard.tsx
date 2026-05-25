@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Tag } from "antd";
 import {
   EyeOutlined,
@@ -20,10 +21,11 @@ import {
 
 type Props = {
   product: Product;
-  onView: (product: Product) => void;
+  onView?: (product: Product) => void;
 };
 
 export default function ProductCard({ product, onView }: Props) {
+  const navigate = useNavigate();
   const image = getProductImage(product);
   const [isImageVisible, setIsImageVisible] = useState(Boolean(image));
   const inStock = product.stock > 0;
@@ -38,6 +40,14 @@ export default function ProductCard({ product, onView }: Props) {
   useEffect(() => {
     setIsImageVisible(Boolean(image));
   }, [image]);
+
+  const handleView = () => {
+    if (onView) {
+      onView(product);
+    } else {
+      navigate(`/products/${product.id}`);
+    }
+  };
 
   return (
     <article
@@ -86,7 +96,7 @@ export default function ProductCard({ product, onView }: Props) {
         </div>
 
         <div
-          className={`absolute right-3 top-3 rounded-full bg-gradient-to-r ${accent.price} px-3 py-1 text-xs font-extrabold text-white shadow-lg ring-2 ring-white/70`}
+          className="absolute right-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-slate-900 shadow-sm ring-1 ring-slate-200 backdrop-blur"
         >
           {formatPrice(product.price)}
         </div>
@@ -120,7 +130,7 @@ export default function ProductCard({ product, onView }: Props) {
           <Button
             type="primary"
             icon={<SearchOutlined />}
-            onClick={() => onView(product)}
+            onClick={handleView}
             className={`!h-10 !rounded-xl !border-0 !bg-gradient-to-r ${accent.price} !font-semibold !shadow-[0_10px_24px_-12px_rgba(15,23,42,0.4)]`}
           >
             Ətraflı bax
@@ -128,7 +138,7 @@ export default function ProductCard({ product, onView }: Props) {
           <Button
             aria-label="Məhsula bax"
             icon={<EyeOutlined />}
-            onClick={() => onView(product)}
+            onClick={handleView}
             className="!h-10 !rounded-xl !border-slate-200 hover:!border-slate-400"
           />
         </div>
@@ -136,3 +146,4 @@ export default function ProductCard({ product, onView }: Props) {
     </article>
   );
 }
+

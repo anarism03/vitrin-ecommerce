@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import CategoryService from "../../../services/CategoryService";
 import ProductService from "../../../services/ProductService";
 import type { CategoryOption } from "../../../types/category.type";
 import type {
   Product,
   ProductFilters,
+  ProductSort,
 } from "../../../types/product.type";
 import { getErrorMessage, unwrap } from "../../../utils/getErrorMessage";
 import { sortProducts } from "../../../utils/productHelpers";
@@ -66,6 +68,20 @@ function normalizeProductList(responseData: unknown) {
 }
 
 export function useProductCatalog() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const filters = useMemo<ProductFilters>(() => ({
+    searchText: searchParams.get("search") || DEFAULT_PRODUCT_FILTERS.searchText,
+    categoryId: searchParams.get("category") || DEFAULT_PRODUCT_FILTERS.categoryId,
+    minPrice: searchParams.has("minPrice")
+      ? Number(searchParams.get("minPrice"))
+      : DEFAULT_PRODUCT_FILTERS.minPrice,
+    maxPrice: searchParams.has("maxPrice")
+      ? Number(searchParams.get("maxPrice"))
+      : DEFAULT_PRODUCT_FILTERS.maxPrice,
+    sortBy: (searchParams.get("sortBy") as ProductSort) || DEFAULT_PRODUCT_FILTERS.sortBy,
+  }), [searchParams]);
+
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,9 +90,7 @@ export function useProductCatalog() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(PRODUCT_PAGE_SIZE);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState<ProductFilters>(
-    DEFAULT_PRODUCT_FILTERS,
-  );
+
   const requestIdRef = useRef(0);
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
@@ -165,11 +179,38 @@ export function useProductCatalog() {
   const visibleProducts = sortProducts(products, filters.sortBy);
 
   const updateFilters = (patch: Partial<ProductFilters>) => {
-    setFilters((prev) => ({ ...prev, ...patch }));
+    const next = { ...filters, ...patch };
+    const newParams = new URLSearchParams(searchParams);
+
+    if (next.searchText) newParams.set("search", next.searchText);
+    else newParams.delete("search");
+
+    if (next.categoryId) newParams.set("category", next.categoryId);
+    else newParams.delete("category");
+
+    if (next.minPrice !== undefined && next.minPrice !== null) {
+      newParams.set("minPrice", next.minPrice.toString());
+    } else {
+      newParams.delete("minPrice");
+    }
+
+    if (next.maxPrice !== undefined && next.maxPrice !== null) {
+      newParams.set("maxPrice", next.maxPrice.toString());
+    } else {
+      newParams.delete("maxPrice");
+    }
+
+    if (next.sortBy && next.sortBy !== DEFAULT_PRODUCT_FILTERS.sortBy) {
+      newParams.set("sortBy", next.sortBy);
+    } else {
+      newParams.delete("sortBy");
+    }
+
+    setSearchParams(newParams, { replace: true });
   };
 
   const resetFilters = () => {
-    setFilters(DEFAULT_PRODUCT_FILTERS);
+    setSearchParams(new URLSearchParams(), { replace: true });
   };
 
   const hasMore = products.length < totalCount;

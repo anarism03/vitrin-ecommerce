@@ -24,18 +24,18 @@ export const PRODUCT_SORT_OPTIONS: Array<{
 export const PRODUCT_PAGE_SIZE = 10;
 
 export const PRODUCT_HERO_CHIPS: Array<{ label: string; className: string }> = [
-  { label: "Yeni", className: "bg-emerald-500/20 text-emerald-200" },
-  { label: "Trend", className: "bg-rose-500/20 text-rose-200" },
-  { label: "Filtr", className: "bg-sky-500/20 text-sky-200" },
+  { label: "Yeni", className: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  { label: "Trend", className: "bg-rose-100 text-rose-700 border-rose-200" },
+  { label: "Filtr", className: "bg-sky-100 text-sky-700 border-sky-200" },
 ];
 
 export const PRODUCT_HERO_HIGHLIGHTS: Array<{
   label: string;
   color: string;
 }> = [
-  { label: "Sürətli axtarış", color: "text-teal-300" },
-  { label: "Ağıllı filtr", color: "text-emerald-300" },
-  { label: "Rahat sıralama", color: "text-sky-300" },
+  { label: "Sürətli axtarış", color: "text-teal-600" },
+  { label: "Ağıllı filtr", color: "text-emerald-600" },
+  { label: "Rahat sıralama", color: "text-sky-600" },
 ];
 
 export type ProductAccent = {

@@ -40,14 +40,11 @@ export default function Home() {
       {/* HERO */}
       <section className="py-10 sm:py-14">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
             <ThunderboltFilled />
             Yeni vitrin
           </span>
-          <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 sm:inline-flex">
-            <CheckCircleFilled className="text-emerald-500" />
-            Stokda olan seçimlər
-          </span>
+
         </div>
 
         <div className="max-w-3xl">
@@ -65,7 +62,7 @@ export default function Home() {
           <h1 className="m-0 text-4xl font-black leading-[1.15] tracking-tight text-slate-900 sm:text-6xl sm:leading-[1.1] lg:text-7xl">
             Seçilmiş məhsullar,
             <br className="hidden sm:inline" />{" "}
-            <span className="bg-gradient-to-r from-teal-500 via-emerald-500 to-sky-500 bg-clip-text text-transparent">
+            <span className="text-emerald-500">
               rahat alış-veriş
             </span>
           </h1>
@@ -80,7 +77,7 @@ export default function Home() {
               size="large"
               icon={<ShoppingOutlined />}
               onClick={() => navigate("/products")}
-              className="!h-12 !rounded-full !border-0 !bg-gradient-to-r !from-teal-500 !to-emerald-500 !px-6 !font-semibold !text-white !shadow-[0_8px_24px_-10px_rgba(13,148,136,0.6)] hover:!from-teal-600 hover:!to-emerald-600"
+              className="!h-12 !rounded-full !border-0 !bg-emerald-500 !px-6 !font-semibold !text-white hover:!bg-emerald-600"
             >
               Məhsullara bax
             </Button>
@@ -88,7 +85,7 @@ export default function Home() {
               size="large"
               icon={<ArrowRightOutlined />}
               onClick={() => navigate("/products")}
-              className="!h-12 !rounded-full !border-slate-300 !bg-transparent !px-6 !font-semibold !text-slate-700 hover:!border-teal-400 hover:!text-teal-600"
+              className="!h-12 !rounded-full !border-slate-300 !bg-transparent !px-6 !font-semibold !text-slate-700 hover:!border-emerald-400 hover:!text-emerald-600"
             >
               Kolleksiyanı aç
             </Button>
@@ -115,31 +112,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* STATS STRIP */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {HOME_STATS.map((stat) => (
-          <div
-            key={stat.label}
-            className={`group relative overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-br ${stat.bg} p-5 shadow-[0_10px_30px_-22px_rgba(15,23,42,0.45)] ring-1 ${stat.ring} transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-22px_rgba(15,23,42,0.45)]`}
-          >
-            <div
-              aria-hidden
-              className={`absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gradient-to-br ${stat.gradient} opacity-20 blur-2xl`}
-            />
-            <div
-              className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient} text-base text-white shadow-md`}
-            >
-              {stat.icon}
-            </div>
-            <p className="m-0 text-3xl font-black tracking-tight text-slate-950">
-              {stat.value}
-            </p>
-            <p className="m-0 mt-1 text-sm font-medium text-slate-600">
-              {stat.label}
-            </p>
-          </div>
-        ))}
-      </section>
+
 
       {/* SHOWCASE */}
       <section className="grid gap-4 md:grid-cols-3">
@@ -219,11 +192,7 @@ export default function Home() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {categoryTiles.map((tile, idx) => {
-            const accent =
-              HOME_CATEGORY_ACCENTS[idx % HOME_CATEGORY_ACCENTS.length];
-
-            return (
+          {categoryTiles.map((tile, idx) => (
               <button
                 key={tile.title}
                 type="button"
@@ -236,7 +205,7 @@ export default function Home() {
                   className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${accent} mix-blend-multiply opacity-0 transition duration-500 group-hover:opacity-100`}
+                  className="absolute inset-0 bg-emerald-500 mix-blend-multiply opacity-0 transition duration-500 group-hover:opacity-100"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
@@ -253,57 +222,11 @@ export default function Home() {
                   </p>
                 </div>
               </button>
-            );
-          })}
+            ))}
         </div>
       </section>
 
-      {/* WHY US — FEATURES */}
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white via-teal-50/30 to-sky-50/30 p-6 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.3)] sm:p-9">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-teal-200/40 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-fuchsia-200/30 blur-3xl"
-        />
 
-        <div className="relative mb-7 max-w-2xl">
-          <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-rose-600 ring-1 ring-rose-100">
-            <HeartFilled />
-            Niyə Vitrin?
-          </span>
-          <h2 className="m-0 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
-            Premium səviyyə müştəri təcrübəsi
-          </h2>
-          <p className="m-0 mt-2 text-sm text-slate-600">
-            Hər təfərrüat müştəri üçün düşünülüb — sürətli, təhlükəsiz və
-            zövqlü.
-          </p>
-        </div>
-
-        <div className="relative grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {HOME_FEATURES.map((feature) => (
-            <div
-              key={feature.title}
-              className="group rounded-2xl border border-white/60 bg-white/70 p-5 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:shadow-lg"
-            >
-              <div
-                className={`mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.gradient} text-lg text-white shadow-md transition group-hover:scale-110`}
-              >
-                {feature.icon}
-              </div>
-              <p className="m-0 text-[15px] font-bold text-slate-950">
-                {feature.title}
-              </p>
-              <p className="m-0 mt-1.5 text-sm leading-6 text-slate-600">
-                {feature.helper}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* RECENT PRODUCTS */}
       <section>
@@ -366,7 +289,7 @@ export default function Home() {
             </span>
             <h3 className="m-0 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">
               Vitrinin yeniliklərini{" "}
-              <span className="bg-gradient-to-r from-teal-500 via-emerald-500 to-sky-500 bg-clip-text text-transparent">
+              <span className="text-emerald-500">
                 ilk siz öyrənin
               </span>
             </h3>
@@ -381,7 +304,7 @@ export default function Home() {
             size="large"
             icon={<ShoppingOutlined />}
             onClick={() => navigate("/products")}
-            className="!h-12 !rounded-full !border-0 !bg-gradient-to-r !from-teal-500 !to-emerald-500 !px-7 !font-semibold !text-white !shadow-[0_8px_24px_-10px_rgba(13,148,136,0.6)] hover:!from-teal-600 hover:!to-emerald-600"
+            className="!h-12 !rounded-full !border-0 !bg-emerald-500 !px-7 !font-semibold !text-white hover:!bg-emerald-600"
           >
             İndi alış-verişə başla
           </Button>

@@ -97,8 +97,8 @@ export function getHomeCategoryTile(categoryName: string, index: number) {
 }
 
 export const HOME_HERO_CHIPS: Array<{ label: string; className: string }> = [
-  { label: "Trend", className: "bg-rose-100 text-rose-700 border-rose-200" },
-  { label: "Premium", className: "bg-amber-100 text-amber-700 border-amber-200" },
+  { label: "Trend", className: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  { label: "Premium", className: "bg-emerald-100 text-emerald-700 border-emerald-200" },
   { label: "24/7", className: "bg-emerald-100 text-emerald-700 border-emerald-200" },
 ];
 

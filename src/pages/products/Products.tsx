@@ -36,13 +36,9 @@ export default function Products() {
     <div className="space-y-6">
       <section className="py-10 sm:py-12">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
             <ThunderboltFilled />
             Public vitrin
-          </span>
-          <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 sm:inline-flex">
-            <CheckCircleFilled className="text-emerald-500" />
-            Stokda olan seçimlər
           </span>
         </div>
 
@@ -62,7 +58,7 @@ export default function Products() {
           <h1 className="m-0 text-3xl font-black leading-[1.15] tracking-tight text-slate-900 sm:text-5xl sm:leading-[1.1] lg:text-6xl">
             Bütün məhsullar
             <br className="hidden sm:inline" />{" "}
-            <span className="bg-gradient-to-r from-teal-500 via-emerald-500 to-sky-500 bg-clip-text text-transparent">
+            <span className="text-emerald-500">
               bir vitrində
             </span>
           </h1>
@@ -151,7 +147,7 @@ export default function Products() {
                     icon={<DownOutlined />}
                     onClick={loadMore}
                     loading={loadingMore}
-                    className="!h-12 !rounded-full !border-0 !bg-gradient-to-r !from-teal-600 !to-emerald-600 !px-7 !font-semibold !text-white !shadow-[0_14px_30px_-18px_rgba(13,148,136,0.7)] hover:!from-teal-700 hover:!to-emerald-700"
+                    className="!h-12 !rounded-full !border-0 !bg-emerald-500 !px-7 !font-semibold !text-white hover:!bg-emerald-600"
                   >
                     Daha çox yüklə
                   </Button>

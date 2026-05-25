@@ -18,10 +18,7 @@ import {
   getCategoryName,
   getProductGalleryImages,
 } from "../../utils/productHelpers";
-import {
-  hashAccentKey,
-  PRODUCT_DETAIL_ACCENT_PALETTE,
-} from "./productCatalog.constants";
+
 import { useProductDetail } from "./hooks/useProductDetail";
 
 export default function ProductDetailPage() {
@@ -53,14 +50,13 @@ export default function ProductDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [failedUrls, selectedImage]);
 
-  const accentKey = product
-    ? product.categoryId || product.category?.id || product.id
-    : "";
-  const accent = product
-    ? PRODUCT_DETAIL_ACCENT_PALETTE[
-        hashAccentKey(String(accentKey)) % PRODUCT_DETAIL_ACCENT_PALETTE.length
-      ]
-    : PRODUCT_DETAIL_ACCENT_PALETTE[0];
+  const accent = {
+    badge: "from-emerald-500 to-emerald-600",
+    soft: "from-emerald-50 via-white to-emerald-50",
+    ring: "ring-emerald-200",
+    chip: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    text: "text-emerald-700",
+  };
 
   const currentImage =
     visibleImages.find((img) => img.url === selectedImage)?.url ||

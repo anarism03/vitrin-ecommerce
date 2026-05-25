@@ -9,15 +9,7 @@ import {
   TagFilled,
 } from "@ant-design/icons";
 import type { Product } from "../../../types/product.type";
-import {
-  formatPrice,
-  getCategoryName,
-  getProductImage,
-} from "../../../utils/productHelpers";
-import {
-  hashAccentKey,
-  PRODUCT_ACCENT_PALETTE,
-} from "../productCatalog.constants";
+import { formatPrice, getCategoryName, getProductImage } from "../../../utils/productHelpers";
 
 type Props = {
   product: Product;
@@ -31,11 +23,13 @@ export default function ProductCard({ product, onView }: Props) {
   const inStock = product.stock > 0;
   const hasImage = Boolean(image) && isImageVisible;
 
-  const accentKey = product.categoryId || product.category?.id || product.id;
-  const accent =
-    PRODUCT_ACCENT_PALETTE[
-      hashAccentKey(String(accentKey)) % PRODUCT_ACCENT_PALETTE.length
-    ];
+  const accent = {
+    badge: "from-emerald-400 to-emerald-500",
+    ring: "hover:border-emerald-300 hover:shadow-emerald-200/50",
+    border: "border-slate-200",
+    chip: "!bg-emerald-50 !text-emerald-700 !border-emerald-100",
+    imageBg: "bg-slate-50",
+  };
 
   useEffect(() => {
     setIsImageVisible(Boolean(image));
@@ -59,7 +53,7 @@ export default function ProductCard({ product, onView }: Props) {
       />
 
       <div
-        className={`relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br ${accent.imageBg}`}
+        className={`relative aspect-[4/3] w-full overflow-hidden ${accent.imageBg}`}
       >
         {hasImage ? (
           <img
@@ -128,10 +122,10 @@ export default function ProductCard({ product, onView }: Props) {
 
         <div className="mt-auto grid grid-cols-[1fr_44px] gap-2 pt-1">
           <Button
-            type="primary"
+            type="default"
             icon={<SearchOutlined />}
             onClick={handleView}
-            className={`!h-10 !rounded-xl !border-0 !bg-gradient-to-r ${accent.price} !font-semibold !shadow-[0_10px_24px_-12px_rgba(15,23,42,0.4)]`}
+            className="!h-10 !rounded-xl !bg-white !text-emerald-600 !border-emerald-200 !font-semibold hover:!bg-emerald-500 hover:!text-white hover:!border-emerald-500"
           >
             Ətraflı bax
           </Button>

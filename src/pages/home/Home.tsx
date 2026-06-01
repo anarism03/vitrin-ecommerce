@@ -1,6 +1,7 @@
 import { Alert, Button, Skeleton } from "antd";
 import { ArrowRightOutlined, ShoppingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import ProductCard from "../products/components/ProductCard";
 import { getHomeCategoryTile, HOME_CATEGORY_TILES } from "./home.constants";
 import { useHomeCatalog } from "./hooks/useHomeCatalog";
@@ -10,8 +11,39 @@ export default function Home() {
   const { categories, error, fetchHomeCatalog, loading, products } =
     useHomeCatalog();
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+  const [dragged, setDragged] = useState(false);
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    isDragging.current = true;
+    setDragged(false);
+    startX.current = e.pageX - scrollRef.current.offsetLeft;
+    scrollLeft.current = scrollRef.current.scrollLeft;
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = x - startX.current;
+    if (Math.abs(walk) > 4) setDragged(true);
+    scrollRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  const onMouseUp = () => {
+    isDragging.current = false;
+  };
+
   const categoryTiles = HOME_CATEGORY_TILES.map((tile, index) =>
-    getHomeCategoryTile(categories[index]?.name || tile.title, index),
+    getHomeCategoryTile(
+      categories[index]?.name || tile.title,
+      index,
+      categories[index]?.id,
+    ),
   );
   const recentProducts = products.slice(0, 3);
 
@@ -81,19 +113,39 @@ export default function Home() {
           </Button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto pb-3 select-none"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            cursor: isDragging.current ? "grabbing" : "grab",
+          }}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+        >
           {categoryTiles.map((tile) => (
             <button
               key={tile.title}
               type="button"
-              onClick={() => navigate("/products")}
-              className="group rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-sm transition hover:border-emerald-200 hover:shadow-md"
+              onClick={() => {
+                if (dragged) return;
+                const path = tile.categoryId
+                  ? `/products?category=${tile.categoryId}`
+                  : "/products";
+                navigate(path);
+              }}
+              className="group w-52 flex-none rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-sm transition hover:border-emerald-200 hover:shadow-md sm:w-60"
+              style={{ userSelect: "none" }}
             >
               <div className="relative h-36 overflow-hidden rounded-xl bg-slate-100 sm:h-40">
                 <img
                   src={tile.image}
                   alt={tile.title}
-                  className="h-full w-full object-cover object-center"
+                  draggable={false}
+                  className="h-full w-full object-cover object-center transition duration-300 group-hover:scale-105"
                 />
               </div>
               <div className="px-3 pb-3 pt-4">

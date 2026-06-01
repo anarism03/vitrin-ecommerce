@@ -56,24 +56,17 @@ export default function ProductToolbar({
 }: Props) {
   const [filterOpen, setFilterOpen] = useState(false);
   const isMobile = useIsMobile();
-
-  // Local state to hold filter changes before applying
   const [localFilters, setLocalFilters] = useState<ProductFilters>(filters);
 
-  // Sync local state when popover opens/closes or external filters change
   useEffect(() => {
-    if (filterOpen) {
-      setLocalFilters(filters);
-    } else {
-      setLocalFilters(filters);
-    }
-  }, [filterOpen, filters]);
+    setLocalFilters(filters);
+  }, [filters, filterOpen]);
 
   const activeFilterCount = [
     filters.categoryId,
     filters.minPrice !== undefined,
     filters.maxPrice !== undefined,
-    filters.sortBy !== "newest"
+    filters.sortBy !== "newest",
   ].filter(Boolean).length;
 
   const handleApply = () => {
@@ -105,7 +98,7 @@ export default function ProductToolbar({
   const filterFields = (
     <div className="space-y-4" onKeyDown={handleKeyDown}>
       <div>
-        <p className="m-0 mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <p className="m-0 mb-1.5 text-xs font-semibold text-slate-500">
           Sıralama
         </p>
         <Select<ProductSort>
@@ -118,7 +111,7 @@ export default function ProductToolbar({
       </div>
 
       <div>
-        <p className="m-0 mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <p className="m-0 mb-1.5 text-xs font-semibold text-slate-500">
           Kateqoriya
         </p>
         <Select
@@ -136,7 +129,7 @@ export default function ProductToolbar({
       </div>
 
       <div>
-        <p className="m-0 mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <p className="m-0 mb-1.5 text-xs font-semibold text-slate-500">
           Qiymət aralığı
         </p>
         <div className="grid grid-cols-2 gap-2">
@@ -184,7 +177,7 @@ export default function ProductToolbar({
           type="primary"
           size="large"
           onClick={handleApply}
-          className="!h-10 !rounded-xl !border-0 !bg-gradient-to-r !from-teal-600 !to-emerald-600 !font-semibold"
+          className="!h-10 !rounded-xl !border-0 !bg-emerald-500 !font-semibold"
         >
           Tətbiq et
         </Button>
@@ -213,12 +206,12 @@ export default function ProductToolbar({
   );
 
   return (
-    <section className="product-toolbar relative border-b border-slate-200 bg-gradient-to-r from-white via-teal-50/40 to-sky-50/40 px-4 py-4 sm:px-6 sm:py-5">
+    <section className="product-toolbar relative border-b border-slate-200 bg-white px-4 py-4 sm:px-6 sm:py-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3">
         <Input
           allowClear
           prefix={
-            <span className="mr-2 flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-sm">
+            <span className="mr-2 flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500 text-white">
               <SearchOutlined className="text-xs" />
             </span>
           }
@@ -307,7 +300,7 @@ export default function ProductToolbar({
               type="primary"
               size="large"
               onClick={handleApply}
-              className="!h-12 !rounded-xl !border-0 !bg-gradient-to-r !from-teal-600 !to-emerald-600 !font-semibold"
+              className="!h-12 !rounded-xl !border-0 !bg-emerald-500 !font-semibold"
             >
               Tətbiq et
             </Button>

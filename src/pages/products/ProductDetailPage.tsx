@@ -1,17 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert, Button, Skeleton } from "antd";
 import {
   AppstoreOutlined,
   ArrowLeftOutlined,
-  BarcodeOutlined,
   CheckCircleFilled,
   CloseCircleFilled,
   InboxOutlined,
-  PictureOutlined,
-  ShoppingCartOutlined,
   TagsFilled,
-  ThunderboltFilled,
 } from "@ant-design/icons";
 import {
   formatPrice,
@@ -28,16 +24,19 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState("");
   const [failedUrls, setFailedUrls] = useState<string[]>([]);
 
-  const galleryImages = product ? getProductGalleryImages(product) : [];
-  const visibleImages = galleryImages.filter(
-    (img) => !failedUrls.includes(img.url),
+  const galleryImages = useMemo(
+    () => (product ? getProductGalleryImages(product) : []),
+    [product],
+  );
+  const visibleImages = useMemo(
+    () => galleryImages.filter((img) => !failedUrls.includes(img.url)),
+    [failedUrls, galleryImages],
   );
 
   useEffect(() => {
     setFailedUrls([]);
     setSelectedImage(galleryImages[0]?.url || "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product]);
+  }, [galleryImages]);
 
   useEffect(() => {
     if (!visibleImages.length) {
@@ -47,16 +46,7 @@ export default function ProductDetailPage() {
     if (!visibleImages.some((img) => img.url === selectedImage)) {
       setSelectedImage(visibleImages[0].url);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [failedUrls, selectedImage]);
-
-  const accent = {
-    badge: "from-emerald-500 to-emerald-600",
-    soft: "from-emerald-50 via-white to-emerald-50",
-    ring: "ring-emerald-200",
-    chip: "bg-emerald-50 text-emerald-700 border-emerald-100",
-    text: "text-emerald-700",
-  };
+  }, [selectedImage, visibleImages]);
 
   const currentImage =
     visibleImages.find((img) => img.url === selectedImage)?.url ||
@@ -65,7 +55,6 @@ export default function ProductDetailPage() {
   const hasImages = Boolean(currentImage);
   const inStock = product ? product.stock > 0 : false;
 
-  /* ── LOADING ── */
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl space-y-8 py-10">
@@ -82,7 +71,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  /* ── ERROR ── */
   if (error) {
     return (
       <div className="mx-auto max-w-xl py-20 text-center">
@@ -106,12 +94,10 @@ export default function ProductDetailPage() {
     );
   }
 
-  /* ── NOT FOUND ── */
   if (!product) return null;
 
   return (
     <div className="mx-auto max-w-6xl space-y-8 py-8">
-      {/* BACK NAV */}
       <div className="flex items-center gap-3">
         <Button
           icon={<ArrowLeftOutlined />}
@@ -129,7 +115,6 @@ export default function ProductDetailPage() {
         </span>
       </div>
 
-      {/* MAIN CONTENT */}
       <div
         className={
           hasImages
@@ -137,12 +122,10 @@ export default function ProductDetailPage() {
             : "mx-auto max-w-3xl"
         }
       >
-        {/* ── GALLERY ── */}
         {hasImages && (
           <div className="space-y-3">
-            {/* Main image */}
             <div
-              className={`relative overflow-hidden rounded-2xl border border-slate-200/70 bg-gradient-to-br ${accent.soft} p-4 shadow-sm`}
+              className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
             >
               <img
                 src={currentImage}
@@ -154,13 +137,8 @@ export default function ProductDetailPage() {
                   )
                 }
               />
-              <div className="absolute left-5 top-5 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-700 shadow-sm backdrop-blur">
-                <PictureOutlined className={accent.text} />
-                {visibleImages.length} şəkil
-              </div>
             </div>
 
-            {/* Thumbnails */}
             {visibleImages.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
                 {visibleImages.slice(0, 5).map((img, index) => {
@@ -172,7 +150,7 @@ export default function ProductDetailPage() {
                       aria-label={`${product.name} şəkli ${index + 1}`}
                       className={`aspect-[4/3] cursor-pointer overflow-hidden rounded-xl border bg-slate-50 p-0 transition hover:-translate-y-0.5 ${
                         isSelected
-                          ? `border-transparent ring-2 ${accent.ring} shadow-md`
+                          ? "border-emerald-400 ring-2 ring-emerald-100"
                           : "border-slate-200 hover:border-slate-300"
                       }`}
                       onClick={() => setSelectedImage(img.url)}
@@ -195,9 +173,7 @@ export default function ProductDetailPage() {
           </div>
         )}
 
-        {/* ── INFO ── */}
         <div className="min-w-0 space-y-5">
-          {/* Badges */}
           <div className="flex flex-wrap gap-2">
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-sm ${
@@ -208,53 +184,26 @@ export default function ProductDetailPage() {
               {inStock ? "Stokda" : "Bitib"}
             </span>
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${accent.chip}`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
             >
               <AppstoreOutlined />
               {getCategoryName(product)}
             </span>
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${
-                product.isActive
-                  ? "border-slate-200 bg-slate-50 text-slate-700"
-                  : "border-slate-200 bg-slate-50 text-slate-400"
-              }`}
-            >
-              <ThunderboltFilled />
-              {product.isActive ? "Aktiv" : "Passiv"}
-            </span>
           </div>
 
-          {/* Name */}
-          <h1 className="m-0 break-words text-3xl font-black leading-tight tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className="m-0 break-words text-3xl font-bold leading-tight text-slate-950 sm:text-4xl">
             {product.name}
           </h1>
 
-          {/* Price */}
-          <div
-            className={`inline-flex items-baseline gap-2 rounded-2xl bg-gradient-to-r ${accent.badge} px-6 py-4 shadow-[0_14px_30px_-16px_rgba(15,23,42,0.45)]`}
-          >
-            <span className="text-3xl font-black text-white">
+          <div className="inline-flex items-baseline rounded-2xl bg-emerald-500 px-6 py-4 shadow-sm">
+            <span className="text-3xl font-bold text-white">
               {formatPrice(product.price)}
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-wider text-white/80">
-              vitrin qiyməti
             </span>
           </div>
 
-          {/* SKU + Stock */}
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
-                <BarcodeOutlined />
-                SKU
-              </div>
-              <div className="mt-2 break-words text-base font-bold text-slate-950">
-                {product.sku || "—"}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
                 <InboxOutlined />
                 Stok
               </div>
@@ -267,11 +216,8 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Description */}
-          <div className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm">
-            <h3
-              className={`m-0 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] ${accent.text}`}
-            >
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="m-0 flex items-center gap-2 text-sm font-bold text-emerald-700">
               <TagsFilled />
               Təsvir
             </h3>
@@ -280,7 +226,6 @@ export default function ProductDetailPage() {
             </p>
           </div>
 
-          {/* CTA */}
           <div className="flex flex-wrap gap-3 pt-1">
             <Button
               size="large"

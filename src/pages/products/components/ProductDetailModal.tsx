@@ -1,15 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Modal } from "antd";
 import {
   AppstoreOutlined,
-  BarcodeOutlined,
   CheckCircleFilled,
   CloseCircleFilled,
   InboxOutlined,
-  PictureOutlined,
-  ShoppingCartOutlined,
   TagsFilled,
-  ThunderboltFilled,
 } from "@ant-design/icons";
 import type { Product } from "../../../types/product.type";
 import {
@@ -17,10 +13,6 @@ import {
   getCategoryName,
   getProductGalleryImages,
 } from "../../../utils/productHelpers";
-import {
-  hashAccentKey,
-  PRODUCT_DETAIL_ACCENT_PALETTE,
-} from "../productCatalog.constants";
 
 type Props = {
   product: Product | null;
@@ -38,16 +30,19 @@ export default function ProductDetailModal({
   const [selectedImage, setSelectedImage] = useState("");
   const [failedUrls, setFailedUrls] = useState<string[]>([]);
 
-  const galleryImages = product ? getProductGalleryImages(product) : [];
-  const visibleImages = galleryImages.filter(
-    (image) => !failedUrls.includes(image.url),
+  const galleryImages = useMemo(
+    () => (product ? getProductGalleryImages(product) : []),
+    [product],
+  );
+  const visibleImages = useMemo(
+    () => galleryImages.filter((image) => !failedUrls.includes(image.url)),
+    [failedUrls, galleryImages],
   );
 
   useEffect(() => {
     setFailedUrls([]);
     setSelectedImage(galleryImages[0]?.url || "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product, open]);
+  }, [galleryImages, open]);
 
   useEffect(() => {
     if (!visibleImages.length) {
@@ -58,17 +53,7 @@ export default function ProductDetailModal({
     if (!visibleImages.some((image) => image.url === selectedImage)) {
       setSelectedImage(visibleImages[0].url);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product, failedUrls, selectedImage]);
-
-  const accentKey = product
-    ? product.categoryId || product.category?.id || product.id
-    : "";
-  const accent = product
-    ? PRODUCT_DETAIL_ACCENT_PALETTE[
-        hashAccentKey(String(accentKey)) % PRODUCT_DETAIL_ACCENT_PALETTE.length
-      ]
-    : PRODUCT_DETAIL_ACCENT_PALETTE[0];
+  }, [selectedImage, visibleImages]);
 
   if (!product) {
     return null;
@@ -84,21 +69,9 @@ export default function ProductDetailModal({
   return (
     <Modal
       title={
-        <div className="flex items-center gap-3">
-          <span
-            className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${accent.badge} text-white shadow-md`}
-          >
-            <ThunderboltFilled />
-          </span>
-          <div>
-            <p className="m-0 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-              Məhsul detalları
-            </p>
-            <p className="m-0 text-base font-bold text-slate-950">
-              Premium baxış
-            </p>
-          </div>
-        </div>
+        <p className="m-0 text-base font-bold text-slate-950">
+          Məhsul detalları
+        </p>
       }
       width="min(1080px, calc(100vw - 32px))"
       open={open}
@@ -116,15 +89,6 @@ export default function ProductDetailModal({
         >
           Bağla
         </Button>,
-        <Button
-          key="primary"
-          type="primary"
-          icon={<ShoppingCartOutlined />}
-          className={`!h-11 !rounded-xl !border-0 !bg-gradient-to-r ${accent.badge} !px-6 !font-semibold !shadow-[0_12px_28px_-14px_rgba(15,23,42,0.45)]`}
-          onClick={onClose}
-        >
-          Anladım
-        </Button>,
       ]}
       destroyOnClose
     >
@@ -138,7 +102,7 @@ export default function ProductDetailModal({
         {hasImages ? (
           <div className="min-w-0 space-y-3">
             <div
-              className={`relative overflow-hidden rounded-2xl border border-slate-200/70 bg-gradient-to-br ${accent.soft} p-3 shadow-inner`}
+              className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3"
             >
               <img
                 src={currentImage}
@@ -150,10 +114,6 @@ export default function ProductDetailModal({
                   )
                 }
               />
-              <div className="absolute left-5 top-5 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-700 shadow-sm backdrop-blur">
-                <PictureOutlined className={accent.text} />
-                {visibleImages.length} şəkil
-              </div>
             </div>
 
             {visibleImages.length > 1 && (
@@ -168,7 +128,7 @@ export default function ProductDetailModal({
                       aria-label={`${product.name} şəkli ${index + 1}`}
                       className={`aspect-[4/3] cursor-pointer overflow-hidden rounded-xl border bg-slate-50 p-0 transition hover:-translate-y-0.5 ${
                         isSelected
-                          ? `border-transparent ring-2 ${accent.ring} shadow-md`
+                          ? "border-emerald-400 ring-2 ring-emerald-100"
                           : "border-slate-200 hover:border-slate-300"
                       }`}
                       onClick={() => setSelectedImage(image.url)}
@@ -206,50 +166,26 @@ export default function ProductDetailModal({
               {inStock ? "Stokda" : "Bitib"}
             </span>
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${accent.chip}`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
             >
               <AppstoreOutlined />
               {getCategoryName(product)}
             </span>
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${
-                product.isActive
-                  ? "border-slate-200 bg-slate-50 text-slate-700"
-                  : "border-slate-200 bg-slate-50 text-slate-400"
-              }`}
-            >
-              <ThunderboltFilled />
-              {product.isActive ? "Aktiv" : "Passiv"}
-            </span>
           </div>
 
-          <h2 className="m-0 break-words text-3xl font-black leading-tight tracking-tight text-slate-950">
+          <h2 className="m-0 break-words text-3xl font-bold leading-tight text-slate-950">
             {product.name}
           </h2>
 
-          <div
-            className={`mt-4 inline-flex items-baseline gap-2 rounded-2xl bg-gradient-to-r ${accent.badge} px-5 py-3 shadow-[0_14px_30px_-16px_rgba(15,23,42,0.45)]`}
-          >
-            <span className="text-3xl font-black text-white">
+          <div className="mt-4 inline-flex items-baseline rounded-2xl bg-emerald-500 px-5 py-3 shadow-sm">
+            <span className="text-3xl font-bold text-white">
               {formatPrice(product.price)}
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-wider text-white/80">
-              vitrin qiyməti
             </span>
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
-                <BarcodeOutlined />
-                SKU
-              </div>
-              <div className="mt-2 break-words text-base font-bold text-slate-950">
-                {product.sku || "-"}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
                 <InboxOutlined />
                 Stok
               </div>
@@ -264,10 +200,8 @@ export default function ProductDetailModal({
             </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm">
-            <h3
-              className={`m-0 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] ${accent.text}`}
-            >
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="m-0 flex items-center gap-2 text-sm font-bold text-emerald-700">
               <TagsFilled />
               Təsvir
             </h3>

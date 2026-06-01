@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CategoryService from "../../../services/CategoryService";
 import ProductService from "../../../services/ProductService";
 import type { CategoryOption } from "../../../types/category.type";
@@ -37,7 +37,7 @@ export function useHomeCatalog() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchHomeCatalog = async () => {
+  const fetchHomeCatalog = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -54,12 +54,11 @@ export function useHomeCatalog() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     void fetchHomeCatalog();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchHomeCatalog]);
 
   return {
     categories,

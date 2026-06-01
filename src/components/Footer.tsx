@@ -22,7 +22,7 @@ const SOLUTIONS: FooterLink[] = [
 ];
 
 const COMPANY: FooterLink[] = [
-  { label: "Haqqımızda", to: "/" },
+  { label: "Haqqımızda", to: "/about" },
   { label: "Karyera", to: "/" },
   { label: "Müştəri hekayələri", to: "/" },
   { label: "Əlaqə", to: "/" },

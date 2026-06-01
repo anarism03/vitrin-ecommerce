@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Tag } from "antd";
+import { Tag } from "antd";
 import {
-  EyeOutlined,
   InboxOutlined,
   PictureOutlined,
   SearchOutlined,
@@ -13,10 +12,9 @@ import { formatPrice, getCategoryName, getProductImage } from "../../../utils/pr
 
 type Props = {
   product: Product;
-  onView?: (product: Product) => void;
 };
 
-export default function ProductCard({ product, onView }: Props) {
+export default function ProductCard({ product }: Props) {
   const navigate = useNavigate();
   const image = getProductImage(product);
   const [isImageVisible, setIsImageVisible] = useState(Boolean(image));
@@ -27,17 +25,25 @@ export default function ProductCard({ product, onView }: Props) {
     setIsImageVisible(Boolean(image));
   }, [image]);
 
-  const handleView = () => {
-    if (onView) {
-      onView(product);
-    } else {
-      navigate(`/products/${product.id}`);
+  const goToProductDetail = () => {
+    navigate(`/products/${product.id}`);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      goToProductDetail();
     }
   };
 
   return (
     <article
-      className="product-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-200"
+      role="link"
+      tabIndex={0}
+      aria-label={`${product.name} detail səhifəsinə keç`}
+      onClick={goToProductDetail}
+      onKeyDown={handleKeyDown}
+      className="product-card group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
     >
       <span
         aria-hidden
@@ -55,9 +61,7 @@ export default function ProductCard({ product, onView }: Props) {
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-slate-400">
-            <span
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 text-white"
-            >
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 text-white">
               <PictureOutlined className="text-2xl" />
             </span>
             <span className="text-xs font-semibold text-slate-500">
@@ -79,9 +83,7 @@ export default function ProductCard({ product, onView }: Props) {
           </span>
         </div>
 
-        <div
-          className="absolute right-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-extrabold text-slate-900 shadow-sm ring-1 ring-slate-200"
-        >
+        <div className="absolute right-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-extrabold text-slate-900 shadow-sm ring-1 ring-slate-200">
           {formatPrice(product.price)}
         </div>
       </div>
@@ -110,21 +112,11 @@ export default function ProductCard({ product, onView }: Props) {
           </Tag>
         </div>
 
-        <div className="mt-auto grid grid-cols-[1fr_44px] gap-2 pt-1">
-          <Button
-            type="default"
-            icon={<SearchOutlined />}
-            onClick={handleView}
-            className="!h-10 !rounded-xl !bg-white !text-emerald-600 !border-emerald-200 !font-semibold hover:!bg-emerald-500 hover:!text-white hover:!border-emerald-500"
-          >
+        <div className="mt-auto pt-1">
+          <span className="flex h-10 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 font-semibold text-emerald-600 transition group-hover:border-emerald-500 group-hover:bg-emerald-500 group-hover:text-white">
+            <SearchOutlined />
             Ətraflı bax
-          </Button>
-          <Button
-            aria-label="Məhsula bax"
-            icon={<EyeOutlined />}
-            onClick={handleView}
-            className="!h-10 !rounded-xl !border-slate-200 hover:!border-slate-400"
-          />
+          </span>
         </div>
       </div>
     </article>

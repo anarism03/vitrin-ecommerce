@@ -19,18 +19,5 @@ A modern, responsive, and dynamic e-commerce client built with React and TypeScr
 - **Routing:** React Router v6
 - **HTTP Client:** Axios
 
-## 🚀 Getting Started
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/vitrin-ecommerce.git
-   cd vitrin-ecommerce
-   ```
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-3. **Run the Development Server:**
-   ```bash
-   npm run dev
-   ```
+

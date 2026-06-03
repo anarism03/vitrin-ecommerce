@@ -43,9 +43,13 @@ export default function PublicLayout() {
   const [searchParams] = useSearchParams();
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
   const closeCategoryMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+
+  const isTouchNavigation = () =>
+    window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
   const openCategoryMenu = () => {
     if (closeCategoryMenuTimer.current) {
@@ -103,9 +107,27 @@ export default function PublicLayout() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isCategoryMenuOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (headerRef.current?.contains(event.target as Node)) return;
+      setIsCategoryMenuOpen(false);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isCategoryMenuOpen]);
+
   return (
     <AntLayout className="min-h-screen !bg-transparent">
-      <Header className="!sticky !top-0 !z-30 !h-auto !border-b !border-slate-200/70 !bg-white !px-0 !leading-normal">
+      <Header
+        ref={headerRef}
+        className="!sticky !top-0 !z-30 !h-auto !border-b !border-slate-200/70 !bg-white !px-0 !leading-normal"
+      >
         <div className="relative mx-auto flex min-h-16 w-full max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <NavLink
             to="/"
@@ -129,11 +151,15 @@ export default function PublicLayout() {
               <div
                 key={item.to}
                 className="group relative"
-                onPointerEnter={() => {
-                  if (item.to === "/products") openCategoryMenu();
+                onPointerEnter={(event) => {
+                  if (item.to === "/products" && event.pointerType === "mouse") {
+                    openCategoryMenu();
+                  }
                 }}
-                onPointerLeave={() => {
-                  if (item.to === "/products") closeCategoryMenu();
+                onPointerLeave={(event) => {
+                  if (item.to === "/products" && event.pointerType === "mouse") {
+                    closeCategoryMenu();
+                  }
                 }}
                 onFocus={() => {
                   if (item.to === "/products") openCategoryMenu();
@@ -152,7 +178,7 @@ export default function PublicLayout() {
                   onClick={(event) => {
                     if (item.to !== "/products") return;
 
-                    if (window.innerWidth < 640) {
+                    if (isTouchNavigation()) {
                       event.preventDefault();
                       setIsCategoryMenuOpen((open) => !open);
                       return;
@@ -190,8 +216,12 @@ export default function PublicLayout() {
               ? "visible translate-y-0 opacity-100"
               : "invisible -translate-y-1 opacity-0"
           }`}
-          onPointerEnter={openCategoryMenu}
-          onPointerLeave={closeCategoryMenu}
+          onPointerEnter={(event) => {
+            if (event.pointerType === "mouse") openCategoryMenu();
+          }}
+          onPointerLeave={(event) => {
+            if (event.pointerType === "mouse") closeCategoryMenu();
+          }}
           onFocus={openCategoryMenu}
           onBlur={(e) => {
             if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {

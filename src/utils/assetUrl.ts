@@ -1,5 +1,4 @@
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://161.97.154.119/intern-api/api";
+const API_URL = import.meta.env.VITE_API_URL || "/intern-api/api";
 
 const getApiOrigin = () => {
   try {

@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tag } from "antd";
 import {
@@ -25,24 +25,13 @@ export default function ProductCard({ product }: Props) {
     setIsImageVisible(Boolean(image));
   }, [image]);
 
-  const goToProductDetail = () => {
-    navigate(`/products/${product.id}`);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      goToProductDetail();
-    }
-  };
-
   return (
-    <article
-      role="link"
-      tabIndex={0}
-      aria-label={`${product.name} detail səhifəsinə keç`}
-      onClick={goToProductDetail}
-      onKeyDown={handleKeyDown}
+    <a
+      href={`/products/${product.id}`}
+      onClick={(e) => {
+        e.preventDefault();
+        navigate(`/products/${product.id}`);
+      }}
       className="product-card group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
     >
       <span
@@ -119,6 +108,6 @@ export default function ProductCard({ product }: Props) {
           </span>
         </div>
       </div>
-    </article>
+    </a>
   );
 }

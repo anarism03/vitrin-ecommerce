@@ -129,12 +129,6 @@ export default function PublicLayout() {
               <div
                 key={item.to}
                 className="group relative"
-                onMouseEnter={() => {
-                  if (item.to === "/products") openCategoryMenu();
-                }}
-                onMouseLeave={() => {
-                  if (item.to === "/products") closeCategoryMenu();
-                }}
                 onPointerEnter={() => {
                   if (item.to === "/products") openCategoryMenu();
                 }}
@@ -143,6 +137,12 @@ export default function PublicLayout() {
                 }}
                 onFocus={() => {
                   if (item.to === "/products") openCategoryMenu();
+                }}
+                onBlur={(e) => {
+                  if (item.to !== "/products") return;
+                  if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                    closeCategoryMenu();
+                  }
                 }}
               >
                 <NavLink
@@ -190,10 +190,14 @@ export default function PublicLayout() {
               ? "visible translate-y-0 opacity-100"
               : "invisible -translate-y-1 opacity-0"
           }`}
-          onMouseEnter={openCategoryMenu}
-          onMouseLeave={closeCategoryMenu}
           onPointerEnter={openCategoryMenu}
           onPointerLeave={closeCategoryMenu}
+          onFocus={openCategoryMenu}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+              closeCategoryMenu();
+            }
+          }}
         >
           <div className="mx-auto max-h-[calc(100vh-90px)] w-full max-w-7xl overflow-y-auto px-4 py-4 sm:px-6 lg:px-8">
             <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">

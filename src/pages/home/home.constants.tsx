@@ -264,6 +264,11 @@ function normalizeCategoryName(value: string) {
     .replace(/ç/g, "c");
 }
 
+const NORMALIZED_PRESETS = CATEGORY_TILE_PRESETS.map((preset) => ({
+  ...preset,
+  normalizedKeywords: preset.keywords.map(normalizeCategoryName),
+}));
+
 export function getHomeCategoryTile(
   categoryName: string,
   index: number,
@@ -271,10 +276,8 @@ export function getHomeCategoryTile(
 ) {
   const fallback = HOME_CATEGORY_TILES[index % HOME_CATEGORY_TILES.length];
   const normalizedName = normalizeCategoryName(categoryName);
-  const preset = CATEGORY_TILE_PRESETS.find((item) =>
-    item.keywords.some((keyword) =>
-      normalizedName.includes(normalizeCategoryName(keyword)),
-    ),
+  const preset = NORMALIZED_PRESETS.find((item) =>
+    item.normalizedKeywords.some((kw) => normalizedName.includes(kw)),
   );
 
   return {

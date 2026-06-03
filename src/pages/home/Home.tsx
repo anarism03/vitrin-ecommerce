@@ -1,7 +1,7 @@
 import { Alert, Button, Skeleton } from "antd";
 import { ArrowRightOutlined, ShoppingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ProductCard from "../products/components/ProductCard";
 import { getHomeCategoryTile, HOME_CATEGORY_TILES } from "./home.constants";
 import { useHomeCatalog } from "./hooks/useHomeCatalog";
@@ -16,10 +16,12 @@ export default function Home() {
   const startX = useRef(0);
   const scrollLeft = useRef(0);
   const [dragged, setDragged] = useState(false);
+  const [isGrabbing, setIsGrabbing] = useState(false);
 
   const onMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
     isDragging.current = true;
+    setIsGrabbing(true);
     setDragged(false);
     startX.current = e.pageX - scrollRef.current.offsetLeft;
     scrollLeft.current = scrollRef.current.scrollLeft;
@@ -36,14 +38,28 @@ export default function Home() {
 
   const onMouseUp = () => {
     isDragging.current = false;
+    setIsGrabbing(false);
   };
 
-  const categoryTiles = HOME_CATEGORY_TILES.map((tile, index) =>
-    getHomeCategoryTile(
-      categories[index]?.name || tile.title,
-      index,
-      categories[index]?.id,
-    ),
+  useEffect(() => {
+    const handleWindowMouseUp = () => {
+      isDragging.current = false;
+      setIsGrabbing(false);
+    };
+    window.addEventListener("mouseup", handleWindowMouseUp);
+    return () => window.removeEventListener("mouseup", handleWindowMouseUp);
+  }, []);
+
+  const categoryTiles = useMemo(
+    () =>
+      HOME_CATEGORY_TILES.map((tile, index) =>
+        getHomeCategoryTile(
+          categories[index]?.name || tile.title,
+          index,
+          categories[index]?.id,
+        ),
+      ),
+    [categories],
   );
   const recentProducts = products.slice(0, 3);
 
@@ -119,7 +135,7 @@ export default function Home() {
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
-            cursor: isDragging.current ? "grabbing" : "grab",
+            cursor: isGrabbing ? "grabbing" : "grab",
           }}
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
